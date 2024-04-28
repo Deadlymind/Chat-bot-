@@ -1,0 +1,192 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="x-icon" href="{% static 'chat_app/images/logo.png' %}">
+    <title>ChatBot</title>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.css" rel="stylesheet" />
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'chat_app/css/style.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <script src="{% static 'chat_app/js/scripts.js' %}"></script>
+</head>
+<body>
+    
+
+<div class="container">
+    <div class="row">
+        <div style="border-radius: 5px; background-color: rgba(161, 161, 161, 0.108); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(5px);" class="modal-content con mt-4 mb-4">
+            <div style="background-color: rgba(161, 161, 161, 0.108); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(5px); border-radius: 5px 5px 0px 0px;" class="modal-header text-white shadow-5">
+                <div class="my-3">
+                    <a class="text-dark" href="javascript:history.back()"><i type="button" data-mdb-dismiss="modal" style="font-size: 18px;" class="fas fa-arrow-left"></i></a>
+                    <img class="ms-2" src={% static 'chat_app/images/logo.png' %} alt="Header Image" style="border-radius: 50%; max-height: 35px; max-width: 50px;">
+                    <span class="ms-1 text-white">Potato Bot</span>
+                </div>
+                <a data-mdb-placement="bottom" data-mdb-toggle="tooltip" title="Reload" class="text-dark" href="{% url 'chat' %}"><i type="button" data-mdb-dismiss="modal" style="font-size: 18px;" class="fas fa-arrows-rotate"></i></a>
+            </div>
+            <div style="background-color: rgba(161, 161, 161, 0.108); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(5px);" class="modal-body">
+                <div style="background-color: transparent;" id="chat4">
+                    <div id="scroll" class="card-body my-3" data-mdb-perfect-scrollbar="true" style="position: relative; height: 66vh">
+                        {% if chats %}
+                            {% for chat in chats %}
+                                <div id="chatCard">
+                                    <div  class="d-flex flex-row justify-content-end mb-3">
+                                        <div>
+                                            <div style="background-color: #1b1b1b8e; font-size: smaller; border-radius: 20px 0px 20px 20px;" class="small p-2 me-2 mb-1 text-white ms-auto">{{ chat.text_input }}</div>
+                                        </div>
+                                        <img class="rounded-circle mb-1" src="https://espere.in/static/images/profile.webp" alt="avatar 1" style="width: 40px; height: 100%;">
+                                    </div>
+                                    <div id="response_data" class="d-flex flex-row justify-content-start mb-3">
+                                        <img src={% static 'chat_app/images/logo.png' %} alt="avatar 1" style="width:  40px; height: 100%;">
+                                        <div>
+                                            <div id="chatArea" class="small p-2 ms-2 mb-1 me-auto text-white" style="background-color: #1b1b1b8e; font-size: smaller; border-radius: 0px 20px 20px 20px;">{{ chat.gemini_output | safe }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="loader-container">
+                        <div style="color: #242424b1;" class="d-flex align-items-center me-3" id="loading">
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
+                        <img class="rounded-circle" src="https://espere.in/static/images/profile.webp"
+                            alt="avatar 3" style="width: 40px; height: 100%;">
+                        <button id="deleteChatBtn" class="btn btn-danger ms-2">Delete Chat</button>
+                        <form class="form" onsubmit="askQuestion(event)">
+                            <input class="form-control ms-2" type="text" id="userText" name="text" placeholder="Ask your question">
+                        </form>
+                        <span id="submitBtn" style="background-color: rgba(253, 253, 253, 0.532); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(5px)" type="submit" class="ms-3 link-danger btn btn-floating" href=""><i class="fas fa-paper-plane"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MDB -->
+<script
+  type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"
+></script>
+<!-- jquery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+
+<script>
+    let chatCard = document.querySelector('#scroll');
+    chatCard.scrollTop = chatCard.scrollHeight;
+
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelector('#submitBtn').addEventListener('click', () => chat_ajax());
+        document.querySelector('#deleteChatBtn').addEventListener('click', deleteChat);
+    });
+
+    function myFunction() {
+        document.getElementById("userText").disabled = true;
+        document.querySelector('#userText').setAttribute('placeholder', 'Please wait, your result will come soon...');
+    }
+
+    function enableUserText() {
+        // Enable the input field
+        document.getElementById("userText").disabled = false;
+        document.querySelector('#userText').setAttribute('placeholder', 'Ask your question');
+    }
+
+    function deleteChat() {
+        var confirmation = confirm('Are you sure you want to delete the chat?');
+        if (confirmation) {
+            var chatCard = document.querySelector('#scroll');
+            chatCard.innerHTML = ''; // Clear chat content
+        }
+    }
+
+    function chat_ajax() {
+        const md = new markdownit({ html: true });
+        let text = document.querySelector('#userText').value;
+        let html = md.renderInline(text);
+        let chatCard = document.querySelector('#scroll');
+        
+        // Append user's message to chat card
+        chatCard.innerHTML += `
+            <div class="d-flex flex-row justify-content-end mb-3">
+                <div>
+                    <div style="background-color: #1b1b1b8e; font-size: smaller; border-radius: 20px 0px 20px 20px;" class="small p-2 me-2 mb-1 text-white ms-auto">${text}</div>
+                </div>
+                <img class="rounded-circle mb-1" src="https://espere.in/static/images/profile.webp" alt="avatar 1" style="width: 40px; height: 100%;">
+            </div>
+        `;
+        chatCard.scrollTop = chatCard.scrollHeight;
+        console.log(text);
+
+        document.querySelector('#userText').value = null;
+
+        var loading = document.querySelector('#loading');
+        myFunction();
+        loading.innerHTML = `
+            <div class="loader">
+            </div>
+        `;
+        chatCard.scrollTop = chatCard.scrollHeight;
+        $.ajax({
+            type: 'POST',
+            url: '/ask_question/',
+            data: {
+                'text': text,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(res) {
+              var response = md.render(res.data.text); // Render Markdown content
+              var chatCard = document.getElementById('scroll');
+              var typingSpeed = 15; // Set the typing speed in milliseconds
+              // Create response_data div
+              var responseDataDiv = document.createElement('div');
+              responseDataDiv.id = 'response_data';
+              responseDataDiv.classList.add('d-flex', 'flex-row', 'justify-content-start', 'mb-3');
+              chatCard.appendChild(responseDataDiv);
+              
+              // Create avatar image
+              var avatarImg = document.createElement('img');
+              avatarImg.src = "{% static 'chat_app/images/logo.png' %}";
+              avatarImg.alt = "avatar 1";
+              avatarImg.style.width = '40px';
+              avatarImg.style.height = '100%';
+              responseDataDiv.appendChild(avatarImg);
+              
+              // Create chatArea div
+              var chatAreaDiv = document.createElement('div');
+              chatAreaDiv.id = 'chatArea';
+              chatAreaDiv.classList.add('small', 'p-2', 'ms-2', 'mb-1', 'me-auto', 'text-dark');
+              chatAreaDiv.style.backgroundColor = '#ffffffb8';
+              chatAreaDiv.style.fontSize = 'smaller';
+              chatAreaDiv.style.borderRadius = '0px 20px 20px 20px';
+              chatAreaDiv.innerHTML = response;
+              responseDataDiv.appendChild(chatAreaDiv);
+              // chatAreaDiv.innerHTML += response
+              loading.innerHTML = '';
+              chatCard.scrollTop = chatCard.scrollHeight;
+              enableUserText();
+
+          },
+
+
+            error: function() {
+                console.log("There was an error!");
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

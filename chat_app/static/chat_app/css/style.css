@@ -1,0 +1,173 @@
+body {
+    background-image: url("../images/herobg.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: rgba(161, 161, 161, 0.108);
+}
+
+#chat4 .form-control {
+    border-color: transparent;
+}
+
+#chat4 .form-control:focus {
+    border-color: transparent;
+    box-shadow: inset 0px 0px 0px 1px transparent;
+}
+
+.divider:after,
+.divider:before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
+}
+
+#scroll::-webkit-scrollbar {
+    background-color: rgba(0, 0, 0, 0.108);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(5px);
+    width: 5px;
+    height: 0px;
+    color: #eee;
+}
+
+pre::-webkit-scrollbar {
+    background-color: rgba(0, 0, 0, 0.108);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(5px);
+    width: 5px;
+    height: 0px;
+}
+
+div {
+    position: relative;
+}
+
+pre {
+    overflow-x: scroll;
+    width: 68vw;
+}
+
+pre button {
+    position: absolute;
+    top: 1px;
+    left: calc(68vw - 2rem);
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    background-color: rgb(50, 50, 50);
+    border-radius: 50px;
+    border: none;
+}
+
+.form {
+    width: 100%;
+}
+
+#questionInput {
+    background-color: rgba(253, 253, 253, 0.532);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(5px);
+    border: 2px solid rgb(255, 255, 255);
+    border-radius: 45px;
+    height: 40px;
+}
+
+.tooltip-inner {
+    background-color: rgb(100, 100, 100);
+    border-radius: 2px;
+    position: relative;
+    padding: 2px 10px;
+    font-size: small;
+}
+
+.tooltip-inner::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent rgb(100, 100, 100) transparent;
+}
+
+#scroll {
+    margin: 4px 4px;
+    padding: 4px;
+    width: 100%;
+    height: 57.0vh;
+    overflow-x: auto;
+    border-radius: 3px;
+}
+
+#scroll::-webkit-scrollbar {
+    width: 5px;
+    height: 0px;
+}
+
+#scroll::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 7px rgb(219, 219, 219);
+    border-radius: 10px;
+}
+
+#scroll::-webkit-scrollbar-thumb {
+    background: rgb(215, 215, 215);
+    border-radius: 10px;
+}
+
+#scroll::-webkit-scrollbar-thumb:hover {
+    background: rgb(159, 159, 159);
+}
+
+pre {
+    padding: 1em;
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+}
+
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.loader {
+    width: 120px;
+    height: 20px;
+    -webkit-mask: linear-gradient(90deg, #000 70%, #0000 0) left/20% 100%;
+    background: linear-gradient(#000 0 0) left -25% top 0 /20% 100% no-repeat rgb(226, 229, 205);
+    animation: l7 1s infinite steps(6);
+}
+
+@keyframes l7 {
+    100% {
+        background-position: right -25% top 0;
+    }
+    0% {
+        background-position: 0 0;
+    }
+}
+
+#deleteChatBtn {
+    background-color: #dc3545; /* Bootstrap's default danger color */
+    color: #fff; /* Text color */
+    border: none; /* Remove border */
+    padding: 8px 16px; /* Adjust padding */
+    border-radius: 4px; /* Optional: Add border-radius for rounded corners */
+    cursor: pointer; /* Add pointer cursor on hover */
+}
+
+#deleteChatBtn:hover {
+    background-color: #c82333; /* Darker red on hover */
+}
